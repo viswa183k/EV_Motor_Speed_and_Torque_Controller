@@ -1,0 +1,39 @@
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(12,11,5,4,3,2);
+const int pwmPin = 9;
+const int voltagePin = A0;
+const int speedPin = A1;
+
+float voltage, speed;
+int pwmValue;
+
+void setup() {
+  pinMode(pwmPin, OUTPUT);
+  lcd.begin(16,2);
+  lcd.print("EV Motor Ctrl");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  voltage = analogRead(voltagePin) * (25.0/1023.0);
+  speed = analogRead(speedPin) * (100.0/1023.0); // RPM example
+
+  // Simple speed control: reduce PWM if voltage low
+  if(voltage < 20.0) pwmValue = map(speed,0,100,50,200);
+  else pwmValue = map(speed,0,100,100,255);
+
+  analogWrite(pwmPin, pwmValue);
+
+  lcd.setCursor(0,0);
+  lcd.print("Speed:");
+  lcd.print(speed,1);
+  lcd.print("RPM ");
+
+  lcd.setCursor(0,1);
+  lcd.print("PWM:");
+  lcd.print(pwmValue);
+  
+  delay(1000);
+}
